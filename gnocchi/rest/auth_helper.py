@@ -149,7 +149,10 @@ class RemoteUserAuthHelper(object):
         user = request.remote_user
         if user is None:
             api.abort(401)
-        return user.decode('iso-8859-1')
+        try:
+            return user.decode('iso-8859-1')
+        except AttributeError:
+            return user
 
     def get_auth_info(self, request):
         user = self.get_current_user(request)
