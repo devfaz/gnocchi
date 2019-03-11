@@ -16,6 +16,7 @@ from oslo_config import cfg
 import webob.dec
 import webob.request
 import webob.response
+import logging
 
 
 OPTS = (
@@ -76,6 +77,8 @@ class HTTPProxyToWSGI(object):
         return result
 
     def process_request(self, req):
+        logger = logging.getLogger(__name__)
+        logger.debug("process_request %s", req)
         if not self.oslo_conf.api.enable_proxy_headers_parsing:
             return
         fwd_hdr = req.environ.get("HTTP_FORWARDED")
@@ -112,5 +115,11 @@ class HTTPProxyToWSGI(object):
                 req.environ['REMOTE_ADDR'] = forwarded_for
 
         v = req.environ.get("HTTP_X_FORWARDED_PREFIX")
-        if v:
+        if v and 'SCRIPT_NAME' in req.environ:
             req.environ['SCRIPT_NAME'] = v + req.environ['SCRIPT_NAME']
+	elif v:
+	    req.environ['SCRIPT_NAME'] = v
+
+        u = req.environ.get("HTTP_X_REMOTE_USER")
+        if u:
+            req.environ['REMOTE_USER'] = u
