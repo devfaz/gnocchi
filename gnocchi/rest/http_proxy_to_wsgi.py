@@ -117,8 +117,8 @@ class HTTPProxyToWSGI(object):
         v = req.environ.get("HTTP_X_FORWARDED_PREFIX")
         if v and 'SCRIPT_NAME' in req.environ:
             req.environ['SCRIPT_NAME'] = v + req.environ['SCRIPT_NAME']
-	elif v:
-	    req.environ['SCRIPT_NAME'] = v
+        elif v:
+            req.environ['SCRIPT_NAME'] = v
 
         u = req.environ.get("HTTP_X_REMOTE_USER")
         if u:
